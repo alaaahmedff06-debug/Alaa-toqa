@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>ذكرياتنا ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:'Cairo',sans-serif;
+  background:url("bg.jpg") center/cover fixed no-repeat;
+  min-height:100vh;
+  color:#fff;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:-1;
+}
+.container{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.card{
+  background:rgba(255,182,193,.12);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:30px;
+  max-width:750px;
+  width:100%;
+  box-shadow:0 0 30px rgba(255,105,180,.4);
+  animation:fade 1.5s;
+}
+.hidden{display:none}
+h1,h2{color:#ffb6c1;text-align:center}
+p{line-height:1.9;font-size:18px;text-align:center}
+input,textarea{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+  font-size:16px;
+}
+textarea{height:100px;resize:none}
+button{
+  margin-top:15px;
+  padding:12px 25px;
+  border:none;
+  border-radius:25px;
+  background:linear-gradient(45deg,#ff69b4,#ff1493);
+  color:#fff;
+  cursor:pointer;
+}
+.slider img{
+  width:100%;
+  border-radius:15px;
+  margin-top:15px;
+}
+.timeline{
+  margin-top:25px;
+}
+.date{
+  background:rgba(255,105,180,.25);
+  padding:10px;
+  border-radius:12px;
+  margin:10px 0;
+  text-align:center;
+}
+.heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:20px;
+  animation:float 6s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(0);opacity:1}
+  to{transform:translateY(-110vh);opacity:0}
+}
+@keyframes fade{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" src="music.mp3" loop></audio>
+
+<div class="container">
+
+<!-- شاشة القفل -->
+<div class="card" id="lock">
+  <h1>💌 موقع الذكريات</h1>
+  <p>بيتفتح بقلب تقتوقتى ❤️</p>
+  <input type="password" id="pass" placeholder="الكود السري">
+  <button onclick="unlock()">دخول</button>
+  <p id="err" style="color:#ff9aa2;text-align:center"></p>
+</div>
+
+<!-- الموقع -->
+<div class="card hidden" id="site">
+
+<h1 id="type"></h1>
+
+<p>
+عيد ميلاد سعيد يا تقى 🎂  
+يا أحلى حاجة حصلت في حياتي  
+يا ضحكة بتطمن  
+ويا قلب أنا اختارته عن العالم كله انتى حب قلبى وروح فوادى مهما اقول مش هكفيكى كل سنه واحنا مع بعض وكل سنه وانتى جنبى
+انتى حب عمرى مراتى وبنتى وكل حاجه 
+انا الفرحه مش سيعانى كنت عاةز احط صور بس خفت الموقع يتهكر 
+المهم انا معاكى دايما يروح قلبى عمرى مهسيبك ابدا 
+كل سنه وانتى جنبى وفحضنى بحبك اوى اوى اوى ❤️
+</p>
+
+<p>
+كل سنة وإنتِ أقرب  
+وأغلى  
+وأحن  
+وكل سنة بحبك بطريقة جديدة  
+بس بنفس القلب.
+</p>
+
+<!-- صور -->
+<div class="slider">
+  <img id="slide" src="1.jpg">
+</div>
+
+<!-- التواريخ -->
+<h2>📅 تواريخ عمرها في قلبي</h2>
+<div class="timeline">
+  <div class="date">27 / 12 💗 بداية حاجة حلوة</div>
+  <div class="date">26 / 1 ✨ ضحكة ما تتنسيش</div>
+  <div class="date">2 / 2 💞 لحظة قرب</div>
+  <div class="date">11 / 2 🌸 إحساس جديد</div>
+  <div class="date">16 / 2 ❤️ يوم اتأكدت فيه</div>
+  <div class="date">31 / 7 💫 ذكرى دافية</div>
+  <div class="date">4 / 10 💍 بحبككككك</div>
+</div>
+
+<!-- الذكريات -->
+<h2>📖 ذكرياتنا</h2>
+<textarea id="memory" placeholder="اكتب ذكرى بينا..."></textarea>
+<button onclick="saveMemory()">حفظ الذكرى</button>
+<p id="saved" style="text-align:center"></p>
+<div id="memories"></div>
+
+</div>
+</div>
+
+<script>
+// 🔐 غير الكود من هنا
+const secret="772024";
+
+// فتح الموقع
+function unlock(){
+  if(pass.value===secret){
+    lock.classList.add("hidden");
+    site.classList.remove("hidden");
+    music.play();
+    typeText();
+    loadMemories();
+  }else{
+    err.textContent="الكود غلط 💔";
+  }
+}
+
+// كتابة حرف حرف
+const text="كل سنة وإنتِ حبيبتي يا تقى ❤️";
+let i=0;
+function typeText(){
+  if(i<text.length){
+    type.innerHTML+=text.charAt(i);
+    i++;
+    setTimeout(typeText,120);
+  }
+}
+
+// سلايدر
+let imgs=["1.jpg","2.jpg","3.jpg"];
+let s=0;
+setInterval(()=>{
+  s=(s+1)%imgs.length;
+  slide.src=imgs[s];
+},3000);
+
+// حفظ الذكريات
+function saveMemory(){
+  let arr=JSON.parse(localStorage.getItem("memories")||"[]");
+  arr.push(memory.value);
+  localStorage.setItem("memories",JSON.stringify(arr));
+  memory.value="";
+  saved.textContent="✨ اتحفظت";
+  loadMemories();
+}
+function loadMemories(){
+  let arr=JSON.parse(localStorage.getItem("memories")||"[]");
+  memories.innerHTML="";
+  arr.forEach(m=>{
+    memories.innerHTML+=`<p style="text-align:center">💗 ${m}</p>`;
+  });
+}
+
+// قلوب
+setInterval(()=>{
+  let h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML="💗";
+  h.style.left=Math.random()*100+"vw";
+  h.style.fontSize=Math.random()*20+15+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},500);
+</script>
+
+</body>
+</html>
